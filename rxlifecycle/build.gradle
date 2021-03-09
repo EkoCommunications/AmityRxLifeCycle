@@ -51,5 +51,5 @@ dependencies {
     api 'com.trello.rxlifecycle3:rxlifecycle-android-lifecycle:3.1.0'
     api 'com.trello.rxlifecycle3:rxlifecycle-kotlin:3.1.0'
 
-    api "com.github.akarnokd:rxjava2-interop:0.13.7"
+    api 'com.github.akarnokd:rxjava2-interop:0.13.7'
 }
