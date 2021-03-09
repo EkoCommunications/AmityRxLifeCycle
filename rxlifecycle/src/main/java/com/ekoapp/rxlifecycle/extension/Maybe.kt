@@ -13,10 +13,7 @@ import io.reactivex.disposables.Disposable
 
 private val disposables = mutableMapOf<String, Disposable>()
 
-fun <E, T> Maybe<T>.untilLifecycleEnd(
-    lifecycleProvider: LifecycleProvider<E>,
-    uniqueId: String? = null
-): Maybe<T> {
+fun <E, T> Maybe<T>.untilLifecycleEnd(lifecycleProvider: LifecycleProvider<E>, uniqueId: String? = null): Maybe<T> {
     return when (lifecycleProvider) {
         is Activity -> bindUntilEvent(
             lifecycleProvider as LifecycleProvider<ActivityEvent>,

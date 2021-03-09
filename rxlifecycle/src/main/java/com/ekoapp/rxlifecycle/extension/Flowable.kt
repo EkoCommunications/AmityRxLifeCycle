@@ -13,10 +13,7 @@ import org.reactivestreams.Subscription
 
 private val subscriptions = mutableMapOf<String, Subscription>()
 
-fun <E, T> Flowable<T>.untilLifecycleEnd(
-    lifecycleProvider: LifecycleProvider<E>,
-    uniqueId: String? = null
-): Flowable<T> {
+fun <E, T> Flowable<T>.untilLifecycleEnd(lifecycleProvider: LifecycleProvider<E>, uniqueId: String? = null): Flowable<T> {
     return when (lifecycleProvider) {
         is Activity -> bindUntilEvent(
             lifecycleProvider as LifecycleProvider<ActivityEvent>,

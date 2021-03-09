@@ -14,10 +14,7 @@ import java.util.concurrent.CancellationException
 
 private val disposables = mutableMapOf<String, Disposable>()
 
-fun <E> Completable.untilLifecycleEnd(
-    lifecycleProvider: LifecycleProvider<E>,
-    uniqueId: String? = null
-): Completable {
+fun <E> Completable.untilLifecycleEnd(lifecycleProvider: LifecycleProvider<E>, uniqueId: String? = null): Completable {
     return when (lifecycleProvider) {
         is Activity -> bindUntilEvent(
             lifecycleProvider as LifecycleProvider<ActivityEvent>,

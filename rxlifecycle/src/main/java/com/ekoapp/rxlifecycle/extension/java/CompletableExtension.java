@@ -12,11 +12,11 @@ import io.reactivex.annotations.NonNull;
 
 public class CompletableExtension {
 
-    public static <E> CompletableTransformer untilLifecycleEnd(final LifecycleProvider<E> lifecycleProvider) {
+    public static <E> CompletableTransformer untilLifecycleEnd(LifecycleProvider<E> lifecycleProvider) {
         return untilLifecycleEnd(lifecycleProvider, null);
     }
 
-    public static <E> CompletableTransformer untilLifecycleEnd(final LifecycleProvider<E> lifecycleProvider, final String uniqueId) {
+    public static <E> CompletableTransformer untilLifecycleEnd(LifecycleProvider<E> lifecycleProvider, final String uniqueId) {
         return new CompletableTransformer() {
             @NonNull
             @Override
@@ -26,11 +26,11 @@ public class CompletableExtension {
         };
     }
 
-    public static CompletableTransformer untilLifecycleEnd(final View view) {
+    public static CompletableTransformer untilLifecycleEnd(View view) {
         return untilLifecycleEnd(view, null);
     }
 
-    public static CompletableTransformer untilLifecycleEnd(final View view, final String uniqueId) {
+    public static CompletableTransformer untilLifecycleEnd(View view, String uniqueId) {
         return new CompletableTransformer() {
             @NonNull
             @Override
