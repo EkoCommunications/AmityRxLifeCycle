@@ -3,6 +3,7 @@ package com.ekoapp.rxlifecycle.extension
 import android.app.Activity
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.ekoapp.rxlifecycle.ViewEvent
 import com.trello.rxlifecycle3.LifecycleProvider
 import com.trello.rxlifecycle3.android.ActivityEvent
 import com.trello.rxlifecycle3.android.FragmentEvent
@@ -22,6 +23,10 @@ fun <E, T> Flowable<T>.untilLifecycleEnd(lifecycleProvider: LifecycleProvider<E>
         is Fragment -> bindUntilEvent(
             lifecycleProvider as LifecycleProvider<FragmentEvent>,
             FragmentEvent.DESTROY
+        )
+        is View -> bindUntilEvent(
+            lifecycleProvider as LifecycleProvider<ViewEvent>,
+            ViewEvent.DETACH
         )
         else -> this
     }.doOnSubscribe {
