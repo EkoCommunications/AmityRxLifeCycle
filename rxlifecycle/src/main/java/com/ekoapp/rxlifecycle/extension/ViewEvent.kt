@@ -1,4 +1,4 @@
-package com.ekoapp.rxlifecycle
+package com.ekoapp.rxlifecycle.extension
 
 enum class ViewEvent {
 
