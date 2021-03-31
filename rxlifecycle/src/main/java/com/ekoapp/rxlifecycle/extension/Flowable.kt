@@ -1,8 +1,6 @@
 package com.ekoapp.rxlifecycle.extension
 
-import android.app.Activity
 import android.view.View
-import androidx.fragment.app.Fragment
 import com.trello.rxlifecycle3.LifecycleProvider
 import com.trello.rxlifecycle3.android.ActivityEvent
 import com.trello.rxlifecycle3.android.FragmentEvent
@@ -14,27 +12,20 @@ import org.reactivestreams.Subscription
 private val subscriptions = mutableMapOf<String, Subscription>()
 
 fun <E, T> Flowable<T>.untilLifecycleEnd(lifecycleProvider: LifecycleProvider<E>, uniqueId: String? = null): Flowable<T> {
-    return when (lifecycleProvider) {
-        is Activity -> bindUntilEvent(
-            lifecycleProvider as LifecycleProvider<ActivityEvent>,
-            ActivityEvent.DESTROY
-        )
-        is Fragment -> bindUntilEvent(
-            lifecycleProvider as LifecycleProvider<FragmentEvent>,
-            FragmentEvent.DESTROY
-        )
-        is View -> bindUntilEvent(
-            lifecycleProvider as LifecycleProvider<ViewEvent>,
-            ViewEvent.DETACH
-        )
-        else -> this
-    }.doOnSubscribe {
-        manageDisposables(it, uniqueId)
-    }.doOnCancel {
-        removeSubscription(uniqueId)
-    }.doOnTerminate {
-        removeSubscription(uniqueId)
-    }
+    return ((lifecycleProvider as? LifecycleProvider<ActivityEvent>)?.let {
+        bindUntilEvent(it, ActivityEvent.DESTROY)
+    } ?: (lifecycleProvider as? LifecycleProvider<FragmentEvent>)?.let {
+        bindUntilEvent(it, FragmentEvent.DESTROY)
+    } ?: (lifecycleProvider as? LifecycleProvider<ViewEvent>)?.let {
+        bindUntilEvent(it, ViewEvent.DETACH)
+    } ?: this)
+        .doOnSubscribe {
+            manageDisposables(it, uniqueId)
+        }.doOnCancel {
+            removeSubscription(uniqueId)
+        }.doOnTerminate {
+            removeSubscription(uniqueId)
+        }
 }
 
 fun <T> Flowable<T>.untilLifecycleEnd(view: View, uniqueId: String? = null): Flowable<T> {
