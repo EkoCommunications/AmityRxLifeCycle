@@ -26,7 +26,7 @@ public class FlowableExtension {
                 .doOnTerminate(() -> FlowableKt.removeSubscription(uniqueId));
     }
 
-    private static <E, T> Flowable<T> untilLifecycleEnd(LifecycleProvider<E> lifecycleProvider, String uniqueId, Flowable<T> upstream) {
+    static <E, T> Flowable<T> untilLifecycleEnd(LifecycleProvider<E> lifecycleProvider, String uniqueId, Flowable<T> upstream) {
         int count = 0;
         while (true) {
             try {

@@ -5,6 +5,7 @@ import android.view.View;
 import com.ekoapp.rxlifecycle.extension.ObservableKt;
 import com.trello.rxlifecycle3.LifecycleProvider;
 
+import hu.akarnokd.rxjava.interop.RxJavaInterop;
 import rx.Observable;
 
 public class ObservableExtension {
@@ -14,7 +15,7 @@ public class ObservableExtension {
     }
 
     public static <E, T> Observable.Transformer<T, T> untilLifecycleEnd(LifecycleProvider<E> lifecycleProvider, String uniqueId) {
-        return upstream -> ObservableKt.untilLifecycleEnd(upstream, lifecycleProvider, uniqueId);
+        return upstream -> RxJavaInterop.toV1Observable(FlowableExtension.untilLifecycleEnd(lifecycleProvider, uniqueId, RxJavaInterop.toV2Flowable(upstream)));
     }
 
     public static <T> Observable.Transformer<T, T> untilLifecycleEnd(View view) {
