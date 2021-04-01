@@ -1,8 +1,6 @@
 package com.ekoapp.rxlifecycle.extension
 
-import android.app.Activity
 import android.view.View
-import androidx.fragment.app.Fragment
 import com.trello.rxlifecycle3.LifecycleProvider
 import com.trello.rxlifecycle3.android.ActivityEvent
 import com.trello.rxlifecycle3.android.FragmentEvent
@@ -12,19 +10,18 @@ import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import java.util.concurrent.CancellationException
 
-private val disposables = mutableMapOf<String, Disposable>()
-
-fun <E, T> Single<T>.untilLifecycleEnd(lifecycleProvider: LifecycleProvider<E>, uniqueId: String? = null): Single<T> {
-    return when (lifecycleProvider) {
-        is Activity -> bindUntilEvent(
+@Suppress("UNCHECKED_CAST")
+inline fun <reified E, T> Single<T>.untilLifecycleEnd(lifecycleProvider: LifecycleProvider<E>, uniqueId: String? = null): Single<T> {
+    return when (E::class) {
+        ActivityEvent::class -> bindUntilEvent(
             lifecycleProvider as LifecycleProvider<ActivityEvent>,
             ActivityEvent.DESTROY
         )
-        is Fragment -> bindUntilEvent(
+        FragmentEvent::class -> bindUntilEvent(
             lifecycleProvider as LifecycleProvider<FragmentEvent>,
             FragmentEvent.DESTROY
         )
-        is View -> bindUntilEvent(
+        ViewEvent::class -> bindUntilEvent(
             lifecycleProvider as LifecycleProvider<ViewEvent>,
             ViewEvent.DETACH
         )
@@ -58,13 +55,17 @@ fun <T> Single<T>.allowEmpty(): Single<T> {
     }
 }
 
-private fun manageDisposables(subscription: Disposable, uniqueId: String?) {
+private val disposables = mutableMapOf<String, Disposable>()
+
+@PublishedApi
+internal fun manageDisposables(disposable: Disposable, uniqueId: String?) {
     uniqueId?.let {
         disposables[it]?.dispose()
-        disposables.put(it, subscription)
+        disposables.put(it, disposable)
     }
 }
 
-private fun removeDisposable(uniqueId: String?) {
+@PublishedApi
+internal fun removeDisposable(uniqueId: String?) {
     uniqueId?.let { disposables.remove(it)?.dispose() }
 }
