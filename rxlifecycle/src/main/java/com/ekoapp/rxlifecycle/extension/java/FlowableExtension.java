@@ -21,7 +21,7 @@ public class FlowableExtension {
 
     public static <E, T> FlowableTransformer<T, T> untilLifecycleEnd(LifecycleProvider<E> lifecycleProvider, String uniqueId) {
         return upstream -> untilLifecycleEnd(lifecycleProvider, uniqueId, upstream)
-                .doOnSubscribe(subscription -> FlowableKt.manageFlowableSubscriptions(subscription, uniqueId))
+                .doOnSubscribe(disposable -> FlowableKt.manageFlowableSubscriptions(disposable, uniqueId))
                 .doOnCancel(() -> FlowableKt.removeFlowableSubscription(uniqueId))
                 .doOnTerminate(() -> FlowableKt.removeFlowableSubscription(uniqueId));
     }
