@@ -9,6 +9,7 @@ import com.trello.rxlifecycle3.kotlin.bindUntilEvent
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import java.util.concurrent.CancellationException
+import java.util.concurrent.ConcurrentHashMap
 
 @Suppress("UNCHECKED_CAST")
 inline fun <reified E, T> Single<T>.untilLifecycleEnd(lifecycleProvider: LifecycleProvider<E>, uniqueId: String? = null): Single<T> {
@@ -55,7 +56,7 @@ fun <T> Single<T>.allowEmpty(): Single<T> {
     }
 }
 
-private val disposables = mutableMapOf<String, Disposable>()
+private val disposables = ConcurrentHashMap<String, Disposable>()
 
 @PublishedApi
 internal fun manageDisposables(disposable: Disposable, uniqueId: String?) {

@@ -8,6 +8,7 @@ import com.trello.rxlifecycle3.kotlin.bindToLifecycle
 import com.trello.rxlifecycle3.kotlin.bindUntilEvent
 import io.reactivex.Flowable
 import org.reactivestreams.Subscription
+import java.util.concurrent.ConcurrentHashMap
 
 @Suppress("UNCHECKED_CAST")
 inline fun <reified E, T> Flowable<T>.untilLifecycleEnd(lifecycleProvider: LifecycleProvider<E>, uniqueId: String? = null): Flowable<T> {
@@ -45,7 +46,7 @@ fun <T> Flowable<T>.untilLifecycleEnd(view: View, uniqueId: String? = null): Flo
         }
 }
 
-private val subscriptions = mutableMapOf<String, Subscription>()
+private val subscriptions = ConcurrentHashMap<String, Subscription>()
 
 @PublishedApi
 internal fun manageSubscriptions(subscription: Subscription, uniqueId: String?) {
