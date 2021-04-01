@@ -4,7 +4,6 @@ import android.util.Log;
 import android.view.View;
 
 import com.ekoapp.rxlifecycle.extension.MaybeKt;
-import com.ekoapp.rxlifecycle.extension.SingleKt;
 import com.ekoapp.rxlifecycle.extension.ViewEvent;
 import com.trello.rxlifecycle3.LifecycleProvider;
 import com.trello.rxlifecycle3.android.ActivityEvent;
@@ -22,9 +21,9 @@ public class MaybeExtension {
 
     public static <E, T> MaybeTransformer<T, T> untilLifecycleEnd(LifecycleProvider<E> lifecycleProvider, String uniqueId) {
         return upstream -> untilLifecycleEnd(lifecycleProvider, uniqueId, upstream)
-                .doOnSubscribe(disposable -> SingleKt.manageDisposables(disposable, uniqueId))
-                .doOnDispose(() -> SingleKt.removeDisposable(uniqueId))
-                .doOnTerminate(() -> SingleKt.removeDisposable(uniqueId));
+                .doOnSubscribe(disposable -> MaybeKt.manageMaybeDisposables(disposable, uniqueId))
+                .doOnDispose(() -> MaybeKt.removeMaybeDisposable(uniqueId))
+                .doOnTerminate(() -> MaybeKt.removeMaybeDisposable(uniqueId));
     }
 
     private static <E, T> Maybe<T> untilLifecycleEnd(LifecycleProvider<E> lifecycleProvider, String uniqueId, Maybe<T> upstream) {

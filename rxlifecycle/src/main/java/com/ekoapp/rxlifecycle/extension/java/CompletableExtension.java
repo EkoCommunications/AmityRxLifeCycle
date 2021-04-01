@@ -4,7 +4,6 @@ import android.util.Log;
 import android.view.View;
 
 import com.ekoapp.rxlifecycle.extension.CompletableKt;
-import com.ekoapp.rxlifecycle.extension.SingleKt;
 import com.ekoapp.rxlifecycle.extension.ViewEvent;
 import com.trello.rxlifecycle3.LifecycleProvider;
 import com.trello.rxlifecycle3.android.ActivityEvent;
@@ -22,9 +21,9 @@ public class CompletableExtension {
 
     public static <E> CompletableTransformer untilLifecycleEnd(LifecycleProvider<E> lifecycleProvider, String uniqueId) {
         return upstream -> untilLifecycleEnd(lifecycleProvider, uniqueId, upstream)
-                .doOnSubscribe(disposable -> SingleKt.manageDisposables(disposable, uniqueId))
-                .doOnDispose(() -> SingleKt.removeDisposable(uniqueId))
-                .doOnTerminate(() -> SingleKt.removeDisposable(uniqueId));
+                .doOnSubscribe(disposable -> CompletableKt.manageCompletableDisposables(disposable, uniqueId))
+                .doOnDispose(() -> CompletableKt.removeCompletableDisposable(uniqueId))
+                .doOnTerminate(() -> CompletableKt.removeCompletableDisposable(uniqueId));
     }
 
     private static <E> Completable untilLifecycleEnd(LifecycleProvider<E> lifecycleProvider, String uniqueId, Completable upstream) {

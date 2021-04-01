@@ -21,9 +21,9 @@ public class SingleExtension {
 
     public static <E, T> SingleTransformer<T, T> untilLifecycleEnd(LifecycleProvider<E> lifecycleProvider, String uniqueId) {
         return upstream -> untilLifecycleEnd(lifecycleProvider, uniqueId, upstream)
-                .doOnSubscribe(disposable -> SingleKt.manageDisposables(disposable, uniqueId))
-                .doOnDispose(() -> SingleKt.removeDisposable(uniqueId))
-                .doOnTerminate(() -> SingleKt.removeDisposable(uniqueId));
+                .doOnSubscribe(disposable -> SingleKt.manageSingleDisposables(disposable, uniqueId))
+                .doOnDispose(() -> SingleKt.removeSingleDisposable(uniqueId))
+                .doOnTerminate(() -> SingleKt.removeSingleDisposable(uniqueId));
     }
 
     private static <E, T> Single<T> untilLifecycleEnd(LifecycleProvider<E> lifecycleProvider, String uniqueId, Single<T> upstream) {
