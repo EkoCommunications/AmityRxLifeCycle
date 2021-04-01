@@ -17,7 +17,7 @@ public class ObservableExtension {
 
     public static <E, T> Observable.Transformer<T, T> untilLifecycleEnd(LifecycleProvider<E> lifecycleProvider, String uniqueId) {
         return upstream -> RxJavaInterop.toV1Observable(FlowableExtension.untilLifecycleEnd(lifecycleProvider, uniqueId, RxJavaInterop.toV2Flowable(upstream))
-                .doOnSubscribe(disposable -> FlowableKt.manageFlowableSubscriptions(disposable, uniqueId))
+                .doOnSubscribe(subscription -> FlowableKt.manageFlowableSubscriptions(subscription, uniqueId))
                 .doOnCancel(() -> FlowableKt.removeFlowableSubscription(uniqueId))
                 .doOnTerminate(() -> FlowableKt.removeFlowableSubscription(uniqueId)));
     }
