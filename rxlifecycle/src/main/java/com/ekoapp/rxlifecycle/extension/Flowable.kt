@@ -27,36 +27,36 @@ inline fun <reified E, T> Flowable<T>.untilLifecycleEnd(lifecycleProvider: Lifec
         )
         else -> this
     }.doOnSubscribe {
-        manageSubscriptions(it, uniqueId)
+        manageFlowableSubscriptions(it, uniqueId)
     }.doOnCancel {
-        removeSubscription(uniqueId)
+        removeFlowableSubscription(uniqueId)
     }.doOnTerminate {
-        removeSubscription(uniqueId)
+        removeFlowableSubscription(uniqueId)
     }
 }
 
 fun <T> Flowable<T>.untilLifecycleEnd(view: View, uniqueId: String? = null): Flowable<T> {
     return bindToLifecycle(view)
         .doOnSubscribe {
-            manageSubscriptions(it, uniqueId)
+            manageFlowableSubscriptions(it, uniqueId)
         }.doOnCancel {
-            removeSubscription(uniqueId)
+            removeFlowableSubscription(uniqueId)
         }.doOnTerminate {
-            removeSubscription(uniqueId)
+            removeFlowableSubscription(uniqueId)
         }
 }
 
-private val subscriptions = ConcurrentHashMap<String, Subscription>()
+private val flowableSubscriptions = ConcurrentHashMap<String, Subscription>()
 
 @PublishedApi
-internal fun manageSubscriptions(subscription: Subscription, uniqueId: String?) {
+internal fun manageFlowableSubscriptions(subscription: Subscription, uniqueId: String?) {
     uniqueId?.let {
-        subscriptions[it]?.cancel()
-        subscriptions.put(it, subscription)
+        flowableSubscriptions[it]?.cancel()
+        flowableSubscriptions.put(it, subscription)
     }
 }
 
 @PublishedApi
-internal fun removeSubscription(uniqueId: String?) {
-    uniqueId?.let { subscriptions.remove(it)?.cancel() }
+internal fun removeFlowableSubscription(uniqueId: String?) {
+    uniqueId?.let { flowableSubscriptions.remove(it)?.cancel() }
 }

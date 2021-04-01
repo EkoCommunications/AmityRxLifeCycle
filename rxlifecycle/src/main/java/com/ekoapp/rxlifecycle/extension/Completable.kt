@@ -7,7 +7,9 @@ import com.trello.rxlifecycle3.android.FragmentEvent
 import com.trello.rxlifecycle3.kotlin.bindToLifecycle
 import com.trello.rxlifecycle3.kotlin.bindUntilEvent
 import io.reactivex.Completable
+import io.reactivex.disposables.Disposable
 import java.util.concurrent.CancellationException
+import java.util.concurrent.ConcurrentHashMap
 
 @Suppress("UNCHECKED_CAST")
 inline fun <reified E> Completable.untilLifecycleEnd(lifecycleProvider: LifecycleProvider<E>, uniqueId: String? = null): Completable {
@@ -26,22 +28,22 @@ inline fun <reified E> Completable.untilLifecycleEnd(lifecycleProvider: Lifecycl
         )
         else -> this
     }.doOnSubscribe {
-        manageDisposables(it, uniqueId)
+        manageCompletableDisposables(it, uniqueId)
     }.doOnDispose {
-        removeDisposable(uniqueId)
+        removeCompletableDisposable(uniqueId)
     }.doOnTerminate {
-        removeDisposable(uniqueId)
+        removeCompletableDisposable(uniqueId)
     }.allowInComplete()
 }
 
 fun Completable.untilLifecycleEnd(view: View, uniqueId: String? = null): Completable {
     return bindToLifecycle(view)
         .doOnSubscribe {
-            manageDisposables(it, uniqueId)
+            manageCompletableDisposables(it, uniqueId)
         }.doOnDispose {
-            removeDisposable(uniqueId)
+            removeCompletableDisposable(uniqueId)
         }.doOnTerminate {
-            removeDisposable(uniqueId)
+            removeCompletableDisposable(uniqueId)
         }.allowInComplete()
 }
 
@@ -49,4 +51,19 @@ fun Completable.allowInComplete(): Completable {
     return onErrorComplete {
         it is CancellationException
     }
+}
+
+private val completableDisposables = ConcurrentHashMap<String, Disposable>()
+
+@PublishedApi
+internal fun manageCompletableDisposables(disposable: Disposable, uniqueId: String?) {
+    uniqueId?.let {
+        completableDisposables[it]?.dispose()
+        completableDisposables.put(it, disposable)
+    }
+}
+
+@PublishedApi
+internal fun removeCompletableDisposable(uniqueId: String?) {
+    uniqueId?.let { completableDisposables.remove(it)?.dispose() }
 }

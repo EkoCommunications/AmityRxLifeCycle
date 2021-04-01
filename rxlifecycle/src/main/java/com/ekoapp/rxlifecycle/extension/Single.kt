@@ -28,22 +28,22 @@ inline fun <reified E, T> Single<T>.untilLifecycleEnd(lifecycleProvider: Lifecyc
         )
         else -> this
     }.doOnSubscribe {
-        manageDisposables(it, uniqueId)
+        manageSingleDisposables(it, uniqueId)
     }.doOnDispose {
-        removeDisposable(uniqueId)
+        removeSingleDisposable(uniqueId)
     }.doOnTerminate {
-        removeDisposable(uniqueId)
+        removeSingleDisposable(uniqueId)
     }.allowEmpty()
 }
 
 fun <T> Single<T>.untilLifecycleEnd(view: View, uniqueId: String? = null): Single<T> {
     return bindToLifecycle(view)
         .doOnSubscribe {
-            manageDisposables(it, uniqueId)
+            manageSingleDisposables(it, uniqueId)
         }.doOnDispose {
-            removeDisposable(uniqueId)
+            removeSingleDisposable(uniqueId)
         }.doOnTerminate {
-            removeDisposable(uniqueId)
+            removeSingleDisposable(uniqueId)
         }.allowEmpty()
 }
 
@@ -56,17 +56,17 @@ fun <T> Single<T>.allowEmpty(): Single<T> {
     }
 }
 
-private val disposables = ConcurrentHashMap<String, Disposable>()
+private val singleDisposables = ConcurrentHashMap<String, Disposable>()
 
 @PublishedApi
-internal fun manageDisposables(disposable: Disposable, uniqueId: String?) {
+internal fun manageSingleDisposables(disposable: Disposable, uniqueId: String?) {
     uniqueId?.let {
-        disposables[it]?.dispose()
-        disposables.put(it, disposable)
+        singleDisposables[it]?.dispose()
+        singleDisposables.put(it, disposable)
     }
 }
 
 @PublishedApi
-internal fun removeDisposable(uniqueId: String?) {
-    uniqueId?.let { disposables.remove(it)?.dispose() }
+internal fun removeSingleDisposable(uniqueId: String?) {
+    uniqueId?.let { singleDisposables.remove(it)?.dispose() }
 }
